@@ -44,15 +44,6 @@ Le propriétaire veut qu'un collègue puisse s'en inspirer et l'étendre.
 - Les tools **agissent sans confirmation** (soumission, navigation). Aucune demande de consentement
   n'est implémentée.
 
-## Ce qui n'est volontairement PAS versionné
-
-Le propriétaire a demandé de ne committer **que l'extension** (plus, ensuite, le PDF du talk).
-Restent non suivis dans le dossier : `demo-lelynx/`, `demo-multi-web-mcp/`, `demo-vision/`,
-`demo-webmcp/`, les images et QR codes, `IDEAS.md`, `agent-adapter-extension.zip` (ancien build),
-et `web-mcp-conference/` (un clone **vide** du même repo, laissé en place, à ne pas committer
-puisque ce serait un repo imbriqué). Le `.gitignore` exclut `**/.claude/settings.local.json`.
-**Ne pas faire `git add -A`** : ajouter les chemins explicitement.
-
 ## Conventions
 
 - Docs et commentaires en **français**. Les fichiers de `agent/` ont des commentaires en anglais :
