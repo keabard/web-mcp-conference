@@ -187,4 +187,3 @@ navigation : c'est le comportement attendu.
   requête ou de protection anti-bot.
 - Les sélecteurs CSS des configs sont fragiles face aux refontes des sites cibles.
 - Le side panel n'est pas automatisable par les outils de pilotage de page.
-- Il reste du debug (`console.log('COUCOU')`) dans le patch `getTools()` de `content.js`.

@@ -35,9 +35,7 @@
   // attend un objet. On patch getTools() pour désérialiser à la volée.
   const _origGetTools = modelContext.getTools.bind(modelContext);
   modelContext.getTools = async () => {
-    console.log('COUCOU')
     const tools = await _origGetTools();
-    console.log({tools})
     return (tools ?? []).map(t => {
       if (typeof t.inputSchema !== 'string') return t;
       try {
