@@ -1,0 +1,158 @@
+{
+  "name": "Leboncoin Véhicules",
+  "hostname": "www.leboncoin.fr",
+  "waitFor": "body",
+  "tools": [
+    {
+      "name": "searchVehicles",
+      "description": "Recherche des véhicules d'occasion sur leboncoin avec filtres avancés. Retourne jusqu'à 25 annonces avec titre, prix, année, kilométrage, carburant, boîte, localisation et URL. IMPORTANT : n'utiliser que les paramètres explicitement mentionnés par l'utilisateur. Ne jamais déduire ou inventer des valeurs. Tous les paramètres sont optionnels. Limitation connue : le filtre géographique par département n'est pas supporté.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "marque": {
+            "type": "string",
+            "description": "Marque du véhicule en majuscules. Exemples : BMW, RENAULT, PEUGEOT, MERCEDES-BENZ, VOLKSWAGEN, CITROEN, AUDI, TOYOTA, FORD, SEAT, MINI, TESLA, KIA, HYUNDAI, OPEL, FIAT. N'utiliser que si explicitement mentionné."
+          },
+          "modele": {
+            "type": "string",
+            "description": "Modèle du véhicule avec préfixe marque et underscore. Fonctionne aussi pour les anciens modèles. Exemples récents : BMW_Série 3, RENAULT_Clio, PEUGEOT_308, VOLKSWAGEN_Golf. Exemples anciens : PEUGEOT_205, RENAULT_R5, CITROEN_2CV, VOLKSWAGEN_Golf (toutes générations). N'utiliser que si un modèle précis est demandé."
+          },
+          "prixMin": {
+            "type": "integer",
+            "description": "Prix minimum en euros. N'utiliser que si l'utilisateur mentionne un prix minimum. Ne JAMAIS mettre 0."
+          },
+          "prixMax": {
+            "type": "integer",
+            "description": "Prix maximum en euros. N'utiliser que si l'utilisateur mentionne un prix maximum. Ne JAMAIS mettre 0."
+          },
+          "kmMin": {
+            "type": "integer",
+            "description": "Kilométrage minimum. N'utiliser que si explicitement demandé. Ne JAMAIS mettre 0."
+          },
+          "kmMax": {
+            "type": "integer",
+            "description": "Kilométrage maximum. N'utiliser que si explicitement demandé. Ne JAMAIS mettre 0."
+          },
+          "anneeMin": {
+            "type": "integer",
+            "description": "Année de première mise en circulation minimum (ex : 2015). N'utiliser que si l'utilisateur mentionne une année ou une période. Ne JAMAIS mettre 0."
+          },
+          "anneeMax": {
+            "type": "integer",
+            "description": "Année de première mise en circulation maximum. N'utiliser que si l'utilisateur mentionne une année ou une période. Ne JAMAIS mettre 0."
+          },
+          "carburant": {
+            "type": "string",
+            "enum": ["Essence", "Diesel", "Hybride", "Hybride Rechargeable", "Électrique", "GPL", "GNV", "Hydrogène", "Autre"],
+            "description": "Type de carburant. N'utiliser que si explicitement mentionné."
+          },
+          "boite": {
+            "type": "string",
+            "enum": ["Manuelle", "Automatique"],
+            "description": "Boîte de vitesses. N'utiliser que si explicitement mentionné."
+          },
+          "typeVehicule": {
+            "type": "string",
+            "enum": ["berline", "break", "4x4", "coupe", "citadine", "monospace", "autre"],
+            "description": "Type de carrosserie. N'utiliser que si explicitement mentionné."
+          },
+          "typeVendeur": {
+            "type": "string",
+            "enum": ["private", "pro"],
+            "description": "Type de vendeur : private (particulier) ou pro (professionnel). N'utiliser que si explicitement mentionné."
+          },
+          "puissanceDinMin": {
+            "type": "integer",
+            "description": "Puissance DIN minimum en chevaux. N'utiliser que si explicitement mentionné."
+          },
+          "puissanceDinMax": {
+            "type": "integer",
+            "description": "Puissance DIN maximum en chevaux. N'utiliser que si explicitement mentionné."
+          },
+          "puissanceFiscaleMin": {
+            "type": "integer",
+            "description": "Puissance fiscale minimum en CV. N'utiliser que si explicitement mentionné."
+          },
+          "puissanceFiscaleMax": {
+            "type": "integer",
+            "description": "Puissance fiscale maximum en CV. N'utiliser que si explicitement mentionné."
+          },
+          "portes": {
+            "type": "integer",
+            "enum": [2, 3, 4, 5],
+            "description": "Nombre de portes. N'utiliser que si explicitement mentionné."
+          },
+          "couleur": {
+            "type": "string",
+            "enum": ["argent", "beige", "blanc", "bleu", "bordeaux", "brun", "gris", "jaune", "marron", "noir", "orange", "rouge", "vert", "violet", "autre"],
+            "description": "Couleur du véhicule. N'utiliser que si explicitement mentionné."
+          },
+          "critair": {
+            "type": "integer",
+            "enum": [0, 1, 2, 3, 4, 5],
+            "description": "Vignette Crit'Air. N'utiliser que si explicitement mentionné."
+          },
+          "sort": {
+            "type": "string",
+            "enum": ["price", "time"],
+            "description": "Critère de tri : price (prix) ou time (date de publication)."
+          },
+          "ordre": {
+            "type": "string",
+            "enum": ["asc", "desc"],
+            "description": "Ordre de tri : asc (croissant) ou desc (décroissant)."
+          }
+        }
+      },
+      "action": {
+        "type": "fetch_nextdata",
+        "urlTemplate": "https://www.leboncoin.fr/recherche?category=2&u_car_brand={marque}&u_car_model={modele}&fuel={carburant}&gearbox={boite}&vehicle_type={typeVehicule}&owner_type={typeVendeur}&doors={portes}&vehicule_color={couleur}&critair={critair}&sort={sort}&order={ordre}",
+        "valueMaps": {
+          "carburant": {
+            "Essence": "1",
+            "Diesel": "2",
+            "GPL": "3",
+            "Électrique": "4",
+            "Autre": "5",
+            "Hybride": "6",
+            "GNV": "7",
+            "Hybride Rechargeable": "8",
+            "Hydrogène": "9"
+          },
+          "boite": {
+            "Manuelle": "1",
+            "Automatique": "2"
+          }
+        },
+        "rangeParams": {
+          "price": ["prixMin", "prixMax"],
+          "mileage": ["kmMin", "kmMax"],
+          "regdate": ["anneeMin", "anneeMax"],
+          "horse_power_din": ["puissanceDinMin", "puissanceDinMax"],
+          "horsepower": ["puissanceFiscaleMin", "puissanceFiscaleMax"]
+        },
+        "findArrayByKey": "list_id",
+        "flattenArrayKey": "attributes",
+        "mapFields": {
+          "titre": "subject",
+          "prix": "price.0",
+          "url": "url",
+          "localisation": "location.city_label",
+          "annee": "attributes.regdate.value_label",
+          "km": "attributes.mileage.value_label",
+          "carburant": "attributes.fuel.value_label",
+          "boite": "attributes.gearbox.value_label",
+          "marque": "attributes.u_car_brand.value",
+          "modele": "attributes.u_car_model.value_label",
+          "version": "attributes.u_car_version.value_label",
+          "couleur": "attributes.vehicule_color.value_label",
+          "puissance_din": "attributes.horse_power_din.value_label",
+          "puissance_fiscale": "attributes.horsepower.value_label",
+          "type_vehicule": "attributes.vehicle_type.value_label",
+          "bon_plan": "attributes.car_price_positioning.value_label"
+        },
+        "limit": 25
+      }
+    }
+  ]
+}

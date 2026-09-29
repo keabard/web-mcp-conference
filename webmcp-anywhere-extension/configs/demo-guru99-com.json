@@ -1,0 +1,90 @@
+{
+  "name": "Mercury Tours Adapter",
+  "hostname": "demo.guru99.com",
+  "waitFor": "body",
+  "tools": [
+    {
+      "name": "login",
+      "description": "Se connecter au site Mercury Tours avec un nom d'utilisateur et un mot de passe. Identifiants de démo : tutorial / tutorial.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "username": { "type": "string" },
+          "password": { "type": "string" }
+        },
+        "required": ["username", "password"]
+      },
+      "action": {
+        "type": "fill_and_submit",
+        "fields": [
+          { "selector": "[name='userName']", "argKey": "username" },
+          { "selector": "[name='password']", "argKey": "password" }
+        ],
+        "submitSelector": "[name='submit']",
+        "waitMs": 2000
+      }
+    },
+    {
+      "name": "searchFlights",
+      "description": "Rechercher des vols disponibles entre deux villes et retourner la liste des vols. L'utilisateur doit être connecté. Villes : Acapulco, Frankfurt, London, New York, Paris, Portland, San Francisco, Seattle, Sydney, Zurich.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "fromCity": { "type": "string" },
+          "toCity": { "type": "string" },
+          "fromMonth": { "type": "integer" },
+          "fromDay": { "type": "integer" },
+          "toMonth": { "type": "integer" },
+          "toDay": { "type": "integer" },
+          "serviceClass": { "type": "string", "enum": ["Coach", "Business", "First"] },
+          "passengers": { "type": "integer" }
+        },
+        "required": ["fromCity", "toCity"]
+      },
+      "action": {
+        "type": "remote_form_submit",
+        "formUrl": "https://demo.guru99.com/test/newtours/reservation.php",
+        "fields": [
+          { "selector": "[name='fromPort']",  "argKey": "fromCity" },
+          { "selector": "[name='toPort']",    "argKey": "toCity" },
+          { "selector": "[name='fromMonth']", "argKey": "fromMonth",    "optional": true },
+          { "selector": "[name='fromDay']",   "argKey": "fromDay",      "optional": true },
+          { "selector": "[name='toMonth']",   "argKey": "toMonth",      "optional": true },
+          { "selector": "[name='toDay']",     "argKey": "toDay",        "optional": true },
+          { "selector": "[name='servClass']", "argKey": "serviceClass", "optional": true },
+          { "selector": "[name='passCount']", "argKey": "passengers",   "optional": true }
+        ],
+        "submitName": "findFlights",
+        "resultSelector": "table.browseTable, table[border='0'][cellpadding='4']"
+      }
+    },
+    {
+      "name": "getPageText",
+      "description": "Retourne le texte principal visible sur la page courante. Utile pour comprendre où on se trouve dans le site.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "action": {
+        "type": "scrape",
+        "selector": "body",
+        "format": "text"
+      }
+    },
+    {
+      "name": "navigateTo",
+      "description": "Naviguer vers une section du site via l'URL. Sections disponibles : /test/newtours/ (accueil), /test/newtours/login.php, /test/newtours/register.php, /test/newtours/reservation.php",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string" }
+        },
+        "required": ["path"]
+      },
+      "action": {
+        "type": "navigate",
+        "urlTemplate": "https://demo.guru99.com{path}"
+      }
+    }
+  ]
+}

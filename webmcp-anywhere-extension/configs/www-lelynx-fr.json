@@ -1,0 +1,187 @@
+{
+  "name": "LeLynx Assurance Auto",
+  "hostname": "www.lelynx.fr",
+  "waitFor": "body",
+  "dismissOnLoad": [
+    {
+      "selector": "button",
+      "textMatch": "Accepter et fermer",
+      "waitMs": 500
+    }
+  ],
+  "tools": [
+    {
+      "name": "navigateTo",
+      "description": "Naviguer vers le comparateur assurance auto LeLynx. Utiliser avant compareAssurancesAuto si on n'est pas déjà sur www.lelynx.fr.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "action": {
+        "type": "navigate",
+        "urlTemplate": "https://www.lelynx.fr/assurance-auto/comparateur-auto#vehicule"
+      }
+    },
+    {
+      "name": "compareAssurancesAuto",
+      "description": "Remplit entièrement le formulaire comparateur assurance auto LeLynx (6 étapes : véhicule, usage, conducteur, historique, prochain contrat, coordonnées) puis soumet. Après exécution, naviguer sur autoquote.lelynx.fr et appeler getResultatsAssuranceAuto pour récupérer les devis classés. Prérequis : être sur www.lelynx.fr avec le formulaire au début (étape véhicule). IMPORTANT : demander TOUS les paramètres à l'utilisateur avant d'appeler ce tool.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "immatriculation": {
+            "type": "string",
+            "description": "Plaque d'immatriculation (ex: CH-242-GP)"
+          },
+          "versionVehicule": {
+            "type": "string",
+            "description": "Version approximative du véhicule (ex: 'active', 'bluehdi', '1.0', 'hybride'). LeLynx affiche plusieurs versions après reconnaissance de la plaque — le tool sélectionnera automatiquement la plus proche. Laisser vide pour sélectionner la première disponible."
+          },
+          "genre": {
+            "type": "integer",
+            "enum": [1, 2],
+            "description": "1 = homme, 2 = femme"
+          },
+          "dateNaissanceJour": {
+            "type": "integer",
+            "description": "Jour de naissance (1-31)"
+          },
+          "dateNaissanceMois": {
+            "type": "integer",
+            "description": "Mois de naissance (1-12)"
+          },
+          "dateNaissanceAnnee": {
+            "type": "integer",
+            "description": "Année de naissance (ex: 1975)"
+          },
+          "moisPermis": {
+            "type": "integer",
+            "description": "Mois d'obtention du permis (1-12)"
+          },
+          "anneePermis": {
+            "type": "integer",
+            "description": "Année d'obtention du permis (ex: 1995)"
+          },
+          "bonusMalus": {
+            "type": "number",
+            "description": "Coefficient bonus-malus actuel (ex: 0.50 pour un bonus maximum, 1.00 pour neutre, 1.25 en cas de malus). Demander à l'utilisateur."
+          },
+          "assureurActuel": {
+            "type": "string",
+            "description": "Nom de l'assureur auto actuel (ex: 'Maif', 'Axa', 'Matmut', 'Direct Assurance'). Demander à l'utilisateur."
+          },
+          "typeFormuleSouhaitee": {
+            "type": "string",
+            "description": "Formule d'assurance souhaitée telle qu'affichée par LeLynx (ex: 'Au tiers', 'Tiers +', 'Tous risques'). Demander à l'utilisateur."
+          },
+          "adresse": {
+            "type": "string",
+            "description": "Numéro et rue de la résidence (ex: 12 rue de la Paix)"
+          },
+          "prenom": { "type": "string" },
+          "nom": { "type": "string" },
+          "email": { "type": "string" },
+          "telephone": { "type": "string", "description": "Numéro de téléphone (10 chiffres)" }
+        },
+        "required": ["immatriculation", "genre", "dateNaissanceJour", "dateNaissanceMois", "dateNaissanceAnnee", "moisPermis", "anneePermis", "bonusMalus", "assureurActuel", "typeFormuleSouhaitee", "adresse", "prenom", "nom", "email", "telephone"]
+      },
+      "action": {
+        "type": "multi_step",
+        "requireUrl": "lelynx.fr/assurance-auto/comparateur-auto-2",
+        "requireUrlTarget": "https://www.lelynx.fr/assurance-auto/comparateur-auto-2#vehicule",
+        "requireUrlWaitFor": "#TInsuredCarTypePlate__1",
+        "steps": [
+          { "type": "click", "selector": "#TInsuredCarTypePlate__1", "skipIfPresent": "#LicencePlateNumber_freelicenceplatenumber", "waitMs": 2500 },
+          { "type": "fill_and_submit", "waitForFirstFieldMs": 3000, "fields": [{ "selector": "#LicencePlateNumber_freelicenceplatenumber", "argKey": "immatriculation" }], "submitSelector": "#LicencePlateNumber_licenceplatesubmit_btn", "waitMs": 1000 },
+          { "type": "click", "selectorByText": { "tag": "label", "argKey": "versionVehicule", "waitForMs": 7000, "fuzzy": true }, "waitMs": 1000 },
+          { "type": "click", "selector": "label[for='Month_6']", "waitMs": 500 },
+          { "type": "click", "selector": "label[for='Year_2022']", "waitMs": 500 },
+          { "type": "click", "selector": "#PurchaseDate_submit", "waitMs": 2000 },
+          { "type": "click", "selector": "#Usage__1", "waitMs": 600 },
+          { "type": "click", "selector": "#CarUsageFrequency__1", "waitMs": 600 },
+          { "type": "click", "selector": "#NightParkingType__5", "waitMs": 800 },
+          { "type": "click", "selector": "#NightParkingTypeB3__1", "waitMs": 800 },
+          { "type": "click", "selector": "#WorkingInFrance__1", "waitMs": 1200 },
+          { "type": "slow_type", "selector": "#ParkingDetails input.source-suggest-cap", "value": "75001", "waitMs": 2500, "suggestionSelector": ".ui-autocomplete li:first-child" },
+
+          { "type": "click", "selector": "#PurchasingWay__1", "waitMs": 600 },
+          { "type": "click", "selector": "#CarInsuredPeriod__1", "waitMs": 600 },
+          { "type": "click", "selector": "#GrayCardOwner__1", "waitMs": 600 },
+          { "type": "click", "selector": "#OldCarPeriod__6", "waitMs": 600 },
+          { "type": "click", "selector": "#AnnualKMsActualValue_integercursorBtn", "waitMs": 1000 },
+
+          { "type": "click", "selectorTemplate": "#Gender__{genre}", "waitMs": 800 },
+          {
+            "type": "fill_and_submit",
+            "fields": [
+              { "selector": "#BirthDate_Day", "argKey": "dateNaissanceJour" },
+              { "selector": "#BirthDate_Month", "argKey": "dateNaissanceMois" },
+              { "selector": "#BirthDate_Year", "argKey": "dateNaissanceAnnee" }
+            ],
+            "submitSelector": "#BirthDate_singledatedmySubmit",
+            "waitMs": 1500
+          },
+          { "type": "click", "selectorTemplate": "#DriverLicenceDate label[for='Month_{moisPermis}']", "waitMs": 500 },
+          { "type": "click", "selectorTemplate": "#DriverLicenceDate label[for='Year_{anneePermis}']", "waitMs": 500 },
+          { "type": "click", "selector": "#DriverLicenceDate_submit", "waitMs": 1000 },
+          { "type": "click", "selector": "#LicenseType__2", "waitMs": 600 },
+          { "type": "click", "selector": "#LicenseCreditLost__1", "waitMs": 600 },
+          { "type": "click", "selector": "#ProfessionB__0", "waitMs": 600 },
+          { "type": "click", "selector": "#ProfessionA__2", "waitMs": 600 },
+          { "type": "slow_type", "selector": "#ExactProfession input", "value": "Employ", "optional": true, "waitMs": 2000, "suggestionSelector": ".ui-autocomplete li:first-child", "submitSelector": "#ExactProfession_btn", "submitWaitMs": 800 },
+          { "type": "click", "selector": "#MaritalStatus__1", "waitMs": 600 },
+          { "type": "click", "selector": "#HaveChildren__2", "waitMs": 600 },
+          { "type": "click", "selector": "#ResidenceType__1", "waitMs": 600 },
+          { "type": "click", "selector": "#OccupancyStatus__1", "waitMs": 600 },
+          { "type": "click", "selector": "#DriverAlreadyInsured__1", "waitMs": 800 },
+          { "type": "click", "selector": "#IsInsured__1", "waitMs": 600 },
+          { "type": "click", "selector": "#InsuredAsPrimaryOnOtherCar1__2", "waitMs": 600 },
+          { "type": "click", "selector": "#InsuredAsPrimaryOnOtherCar2__2", "waitMs": 600 },
+
+          { "type": "click", "selector": "#suggest-list_DriverAlreadyInsuredPeriod_15", "waitMs": 400 },
+          { "type": "click", "selector": "#DriverAlreadyInsuredPeriod_submit_btn", "waitMs": 1000 },
+
+          { "type": "click", "selector": "#BonusMalus_openCloseExpand", "waitMs": 300 },
+          { "type": "click", "selectorRaw": "[id='suggest-list_BonusMalus_{bonusMalus}']", "waitMs": 400 },
+          { "type": "click", "selector": "#BonusMalus_submit_btn", "waitMs": 1000 },
+
+          { "type": "click", "selector": "#BonusMalusYears_openCloseExpand", "waitMs": 300 },
+          { "type": "click", "selector": "#suggest-list_BonusMalusYears_4", "waitMs": 400 },
+          { "type": "click", "selector": "#BonusMalusYears_submit_btn", "waitMs": 1000 },
+
+          { "type": "click", "selector": "#FiredFromPolicy__1", "waitMs": 600 },
+
+          { "type": "click", "selector": "#CurrentInsurer_openCloseExpand", "waitMs": 300 },
+          { "type": "click", "selectorByText": { "tag": "li", "argKey": "assureurActuel" }, "waitMs": 400 },
+          { "type": "click", "selector": "#CurrentInsurer_submit_btn", "waitMs": 1000 },
+
+          { "type": "click", "selector": "#CurrentPolicyType__2", "waitMs": 600 },
+          { "type": "click", "selector": "#CurrentContractExpiryDate__7", "waitMs": 600 },
+          { "type": "click", "selector": "#IsOneYearOldContract__1", "waitMs": 600 },
+          { "type": "click", "selector": "#G6G7n button.button--primary", "waitMs": 800 },
+          { "type": "click", "selector": "#PrimaryDriverConvictions button.button--primary", "waitMs": 800 },
+          { "type": "click", "selector": "#primarydriver_multiplechoice_morethan5years button.button--primary", "waitMs": 800 },
+
+          { "type": "click", "selector": "#StepTransition button.button--primary", "waitMs": 2000, "crossPage": true, "crossPageWaitFor": "#NewContractStartDateRadio__3" },
+          { "type": "click", "selector": "#NewContractStartDateRadio__3", "waitMs": 600 },
+          { "type": "click", "selectorByText": { "tag": "label", "argKey": "typeFormuleSouhaitee" }, "waitMs": 600 },
+
+          { "type": "click", "selector": "#ResidencePostalCode_Suggestionlist button", "waitMs": 800 },
+          { "type": "slow_type", "selector": "#Address", "argKey": "adresse", "waitMs": 2500, "suggestionSelector": "#Address_Suggestionlist button", "submitSelector": "#Validate_ResidencePostalCode_btn", "submitWaitMs": 1500 },
+          { "type": "click", "selector": "#IsReceiveProposedOffers__2", "waitMs": 600 },
+          {
+            "type": "fill_and_submit",
+            "fields": [
+              { "selector": "#FirstName", "argKey": "prenom" },
+              { "selector": "#LastName", "argKey": "nom" },
+              { "selector": "#EmailAddress", "argKey": "email" },
+              { "selector": "#Telephone", "argKey": "telephone" }
+            ],
+            "submitSelector": "#checkbox__IsUserConsent",
+            "waitMs": 500
+          },
+          { "type": "click", "selector": "#ContactDetails button.button--primary", "waitMs": 3000 }
+        ]
+      }
+    }
+  ]
+}

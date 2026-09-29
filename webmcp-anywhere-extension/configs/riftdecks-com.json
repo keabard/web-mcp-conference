@@ -1,0 +1,113 @@
+{
+  "name": "RiftDecks.com Adapter",
+  "hostname": "riftdecks.com",
+  "waitFor": "body",
+  "tools": [
+    {
+      "name": "getTopExpensiveCards",
+      "description": "Retourne les cartes Riftbound les plus chères triées par prix décroissant (source : TCGPlayer). Retourne pour chaque carte : rang, prix, nom, set, numéro de collection, variante (foil/normal), et variation de prix. Utile pour savoir quelles cartes valent le plus cher.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "period": {
+            "type": "string",
+            "enum": ["daily", "weekly"],
+            "description": "Filtrer uniquement les cartes ayant bougé sur cette période. Omettre pour voir toutes les cartes sans filtre de tendance."
+          },
+          "move_direction": {
+            "type": "string",
+            "enum": ["all", "winners", "losers"],
+            "description": "Filtrer les gagnants (hausse) ou perdants (baisse) de prix. Par défaut : all."
+          }
+        }
+      },
+      "action": {
+        "type": "fetch_and_scrape",
+        "urlTemplate": "https://riftdecks.com/prices/trends?sort=Prices.price&direction=desc&period={period}&move_direction={move_direction}",
+        "defaults": { "period": "", "move_direction": "all" },
+        "resultSelector": "table"
+      }
+    },
+    {
+      "name": "searchDecksByCard",
+      "description": "Cherche les decklists de tournoi Riftbound qui jouent une carte spécifique. Peut filtrer par plage de dates, classement minimum et nombre minimum d'exemplaires. Retourne la liste des decks avec : rang, legend, nom du deck, tournoi, prix total, date, et URL du deck. L'URL peut être passée à getDeckDecklist pour obtenir la liste complète des cartes avec le nombre d'exemplaires.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cardName": {
+            "type": "string",
+            "description": "Nom partiel ou complet de la carte à rechercher (ex: 'Defy', 'Arise', 'Diana')."
+          },
+          "minCopies": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3,
+            "description": "Nombre minimum d'exemplaires de la carte (cardName) présents dans le deck. Valeurs possibles : 1, 2 ou 3. Omettre pour ne pas filtrer par nombre d'exemplaires."
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Date de début au format YYYY-MM-DD (ex: 2026-06-17 pour il y a une semaine)."
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Date de fin au format YYYY-MM-DD."
+          },
+          "rank": {
+            "type": "string",
+            "enum": ["1st", "top4", "top8", "top16", "top32"],
+            "description": "Classement minimum requis. Par défaut : top8."
+          }
+        },
+        "required": ["cardName"]
+      },
+      "action": {
+        "type": "fetch_and_scrape",
+        "urlTemplate": "https://riftdecks.com/riftbound-decks?omni={cardName}&start_date={startDate}&end_date={endDate}&rank={rank}",
+        "defaults": { "startDate": "", "endDate": "", "rank": "top8" },
+        "resultSelector": "table",
+        "deckCopiesFilter": {
+          "cardArg": "cardName",
+          "minArg": "minCopies",
+          "deckUrlField": "url",
+          "deckSelector": "table",
+          "deckColNames": ["section", "count", "name", "price"],
+          "cardNameCol": "name",
+          "countCol": "count"
+        }
+      }
+    },
+    {
+      "name": "getDeckDecklist",
+      "description": "Récupère la decklist complète d'un deck à partir de son URL. Retourne toutes les cartes avec le nombre d'exemplaires joués (1, 2 ou 3) et le prix unitaire, par catégorie (Legend, Champion, Unit, Gear, Spell, Battlefield, Runes, Sideboard). Très utile pour vérifier combien d'exemplaires d'une carte précise sont joués dans ce deck. L'URL du deck s'obtient via searchDecksByCard.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "deckUrl": {
+            "type": "string",
+            "description": "URL complète du deck, ex: https://riftdecks.com/riftbound-metagame/deck-azir-emperor-of-the-sands-205931"
+          }
+        },
+        "required": ["deckUrl"]
+      },
+      "action": {
+        "type": "fetch_and_scrape",
+        "urlTemplate": "{deckUrl}",
+        "resultSelector": "table",
+        "colNames": ["section", "count", "name", "price"]
+      }
+    },
+    {
+      "name": "getMetaBreakdown",
+      "description": "Retourne le classement des legends Riftbound dans le méta compétitif actuel : meta share (%), nombre total de decks, nombre de top8s, prix moyen du deck, tier. Utile pour comprendre quelles legends dominent le méta.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "action": {
+        "type": "fetch_and_scrape",
+        "urlTemplate": "https://riftdecks.com/legends",
+        "resultSelector": "table"
+      }
+    }
+  ]
+}

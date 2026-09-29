@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "WebMCP Anywhere",
+  "version": "1.0.0",
+  "description": "Injecte des tools WebMCP sur des sites tiers pour les rendre instantanément compatibles avec les agents IA",
+  "permissions": ["activeTab", "scripting", "storage", "tabs", "sidePanel", "languageModel"],
+  "host_permissions": ["<all_urls>"],
+  "side_panel": {
+    "default_path": "sidepanel/sidepanel.html"
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["configs-bundle.js", "dom-analyzer.js", "injector.js", "content.js"],
+      "world": "MAIN",
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["configs/*.json"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

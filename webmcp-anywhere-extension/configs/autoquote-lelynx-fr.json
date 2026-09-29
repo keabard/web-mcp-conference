@@ -1,0 +1,38 @@
+{
+  "name": "LeLynx Résultats Assurance Auto",
+  "hostname": "autoquote.lelynx.fr",
+  "waitFor": "quote-row",
+  "tools": [
+    {
+      "name": "getResultatsAssuranceAuto",
+      "description": "Retourne la liste classée des offres d'assurance auto après soumission du comparateur LeLynx. À appeler depuis autoquote.lelynx.fr après avoir utilisé compareAssurancesAuto sur www.lelynx.fr. Retourne chaque offre avec l'assureur, le prix et la formule.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "action": {
+        "type": "scrape",
+        "selector": "quote-row.is-enabled",
+        "format": "list",
+        "fields": {
+          "assureur": ".partner__name",
+          "prix": ".table__value",
+          "formule": ".paragraph"
+        }
+      }
+    },
+    {
+      "name": "getPageText",
+      "description": "Retourne le texte visible de la page courante. Utile pour vérifier où en est le chargement des résultats.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "action": {
+        "type": "scrape",
+        "selector": "body",
+        "format": "text"
+      }
+    }
+  ]
+}
