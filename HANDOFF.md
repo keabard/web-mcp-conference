@@ -20,7 +20,8 @@ Le propriétaire veut qu'un collègue puisse s'en inspirer et l'étendre.
 | `webmcp-anywhere-extension/agent/README.md` | Agent du side panel, contrat du proxy de repli sur `localhost:8787/route`, pièges de Gemini Nano. |
 | `webmcp-anywhere-extension/CLAUDE.md` | **Instructions d'agent obligatoires** : workflow via Chrome DevTools MCP, synchronisation JSON → bundle, appel des tools via `window.__agentAdapterExecute`. |
 | `Sunny Tech 2026 - WebMCP.pdf` | Slides du talk dont vient l'extension. |
-| `git log` | 4 commits : l'extension, le PDF, la réécriture du README, la suppression des logs de debug. |
+| `skills/` | Copies des skills `webmcp-build` et `webmcp-run`, à installer si l'agent ne les a pas (voir « Skills suggérés »). |
+| `git log` | Historique : l'extension, le PDF, la réécriture du README, la suppression des logs de debug, ce HANDOFF et les skills. |
 
 ## Faits établis dans cette session (non évidents)
 
@@ -65,12 +66,15 @@ rentables :
 
 ## Skills suggérés
 
-Les skills `webmcp-build` et `webmcp-run` sont copiés dans `skills/` : les installer (par ex. dans `~/.claude/skills/`) s'ils ne sont pas déjà disponibles.
+`webmcp-build` et `webmcp-run` sont copiés dans `skills/` à la racine du repo. Pour installer un
+skill, copier son dossier dans `~/.claude/skills/<nom>/` (ou `.claude/skills/<nom>/` pour ce seul
+projet). Les skills issus d'un repo GitHub s'installent aussi avec le CLI `skills`
+(`npx skills add <owner/repo>`).
 
-- `chrome-extensions` : Manifest V3, content scripts en world MAIN, side panel, permissions.
-- `webmcp-build` : écrire ou déboguer les tools `modelContext` et le comportement de la preview
-  Chrome.
-- `webmcp-run` : exigé par `webmcp-anywhere-extension/CLAUDE.md` avant toute interaction avec une
-  webapp (`getTools()` est asynchrone).
-- `chrome-devtools` : charger ou recharger l'extension et tester les tools via `evaluate_script`.
-- `code-review` : avant de pousser une évolution significative.
+| Skill | Quand l'utiliser | Où le trouver |
+|---|---|---|
+| `chrome-extensions` | Manifest V3, content scripts en world MAIN, side panel, permissions. | [googlechrome/modern-web-guidance](https://github.com/googlechrome/modern-web-guidance) → `skills/chrome-extensions/` |
+| `webmcp-build` | Écrire ou déboguer les tools `modelContext` et le comportement de la preview Chrome. | `skills/webmcp-build/` de ce repo ; en amont : [webmaxru/agent-skills](https://github.com/webmaxru/agent-skills) → `skills/webmcp/` (licence MIT) |
+| `webmcp-run` | Exigé par `webmcp-anywhere-extension/CLAUDE.md` avant toute interaction avec une webapp (`getTools()` est asynchrone). | `skills/webmcp-run/` de ce repo uniquement (skill local, pas de source publique) |
+| `chrome-devtools` | Charger ou recharger l'extension et tester les tools via `evaluate_script`. Nécessite aussi le serveur MCP Chrome DevTools (voir `webmcp-anywhere-extension/CLAUDE.md`). | [ChromeDevTools/chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) → `skills/chrome-devtools/` |
+| `code-review` | Avant de pousser une évolution significative. | [mattpocock/skills](https://github.com/mattpocock/skills) → `skills/engineering/code-review/` |
