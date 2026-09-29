@@ -65,6 +65,8 @@ rentables :
 
 ## Skills suggérés
 
+Les skills `webmcp-build` et `webmcp-run` sont copiés dans `skills/` : les installer (par ex. dans `~/.claude/skills/`) s'ils ne sont pas déjà disponibles.
+
 - `chrome-extensions` : Manifest V3, content scripts en world MAIN, side panel, permissions.
 - `webmcp-build` : écrire ou déboguer les tools `modelContext` et le comportement de la preview
   Chrome.
